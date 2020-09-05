@@ -1,6 +1,7 @@
-package com.rekklesdroid.practiceappdagger.di
+package com.rekklesdroid.practiceappdagger.di.auth
 
 import androidx.lifecycle.ViewModel
+import com.rekklesdroid.practiceappdagger.di.ViewModelKey
 import com.rekklesdroid.practiceappdagger.ui.auth.AuthViewModel
 import dagger.Binds
 import dagger.Module
