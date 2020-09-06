@@ -1,6 +1,6 @@
 package com.rekklesdroid.practiceappdagger.di.auth
 
-import com.rekklesdroid.practiceappdagger.network.AuthApi
+import com.rekklesdroid.practiceappdagger.network.auth.AuthApi
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
