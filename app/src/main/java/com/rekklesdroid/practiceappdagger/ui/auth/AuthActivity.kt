@@ -1,5 +1,6 @@
 package com.rekklesdroid.practiceappdagger.ui.auth
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.TextUtils
@@ -10,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.RequestManager
 import com.rekklesdroid.practiceappdagger.R
+import com.rekklesdroid.practiceappdagger.ui.main.MainActivity
 import com.rekklesdroid.practiceappdagger.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_auth.*
@@ -42,6 +44,7 @@ class AuthActivity : DaggerAppCompatActivity(), View.OnClickListener {
                 is AuthResource.Authenticated -> {
                     showProgressBar(false)
                     Log.d(TAG, "subscribeObservers: LOGIN SUCCESS - " + it.data?.email)
+                    onLoginSuccess()
                 }
                 is AuthResource.Loading -> {
                     showProgressBar(true)
@@ -66,11 +69,14 @@ class AuthActivity : DaggerAppCompatActivity(), View.OnClickListener {
         Log.d(TAG, "onStart: ")
     }
 
-
-
     private fun setLogo() {
         requestManager.load(logo)
             .into(login_logo)
+    }
+
+    private fun onLoginSuccess() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     override fun onClick(v: View?) {
