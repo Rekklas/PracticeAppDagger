@@ -14,13 +14,13 @@ data class User(
 
     @SerializedName("name")
     @Expose
-    var name: String?,
+    var name: String? = null,
 
     @SerializedName("email")
     @Expose
-    var email: String?,
+    var email: String? = null,
 
     @SerializedName("website")
     @Expose
-    var website: String?
+    var website: String? = null
 )

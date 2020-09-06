@@ -14,11 +14,23 @@ import javax.inject.Inject
  */
 class AuthViewModel @Inject constructor(private val authApi: AuthApi) : ViewModel() {
 
-    private val authUser: MediatorLiveData<User> = MediatorLiveData()
+    private val authUser: MediatorLiveData<AuthResource<User>> = MediatorLiveData()
 
     fun authenticateWithId(id: Int) {
+        authUser.value = AuthResource.Loading(null)
+
         val source = LiveDataReactiveStreams.fromPublisher(
-            authApi.getUser(id).subscribeOn(Schedulers.io())
+            authApi.getUser(id)
+                .onErrorReturn {
+                    User(-1)
+                }
+                .map {
+                    if (it.id == -1)
+                        return@map AuthResource.Error("Couldn't authenticate. \n Did you enter number from 1 to 10?", it)
+                    else
+                        return@map AuthResource.Authenticated(it)
+                }
+                .subscribeOn(Schedulers.io())
         )
 
         with(authUser) {
@@ -29,7 +41,7 @@ class AuthViewModel @Inject constructor(private val authApi: AuthApi) : ViewMode
         }
     }
 
-    fun observeUser(): LiveData<User> {
+    fun observeUser(): LiveData<AuthResource<User>> {
         return authUser
     }
 

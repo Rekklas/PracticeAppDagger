@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.RequestManager
@@ -36,9 +37,28 @@ class AuthActivity : DaggerAppCompatActivity(), View.OnClickListener {
     }
 
     private fun subscribeObservers() {
-        viewModel.observeUser().observe(this, Observer {
-            Log.d(TAG, "subscribeObservers: " + it.email)
+        viewModel.observeUser().observe(this, Observer { 
+            when(it) {
+                is AuthResource.Authenticated -> {
+                    showProgressBar(false)
+                    Log.d(TAG, "subscribeObservers: LOGIN SUCCESS - " + it.data?.email)
+                }
+                is AuthResource.Loading -> {
+                    showProgressBar(true)
+                }
+                is AuthResource.Error -> {
+                    showProgressBar(false)
+                    Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                }
+                is AuthResource.NotAuthenticated -> {
+                    showProgressBar(false)
+                }
+            }
         })
+    }
+    
+    private fun showProgressBar(isVisible: Boolean) {
+        progress_bar.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 
     override fun onStart() {
@@ -66,6 +86,7 @@ class AuthActivity : DaggerAppCompatActivity(), View.OnClickListener {
     private fun attemptLogin() {
         user_id_input.text.toString().let { userId ->
             if (TextUtils.isEmpty(userId)) return
+            if (!TextUtils.isDigitsOnly(userId)) return
             viewModel.authenticateWithId(Integer.parseInt(userId))
         }
     }
