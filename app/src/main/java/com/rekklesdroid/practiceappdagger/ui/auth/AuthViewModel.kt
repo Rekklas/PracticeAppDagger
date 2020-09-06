@@ -1,7 +1,10 @@
 package com.rekklesdroid.practiceappdagger.ui.auth
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
+import com.rekklesdroid.practiceappdagger.models.User
 import com.rekklesdroid.practiceappdagger.network.auth.AuthApi
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -11,15 +14,23 @@ import javax.inject.Inject
  */
 class AuthViewModel @Inject constructor(private val authApi: AuthApi) : ViewModel() {
 
-    init {
-        authApi.getUser(1)
-            .toObservable()
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                Log.d(TAG, "onNext: ${it.email}")
-            }, {
-                Log.e(TAG, "onError: ", it)
-            })
+    private val authUser: MediatorLiveData<User> = MediatorLiveData()
+
+    fun authenticateWithId(id: Int) {
+        val source = LiveDataReactiveStreams.fromPublisher(
+            authApi.getUser(id).subscribeOn(Schedulers.io())
+        )
+
+        with(authUser) {
+            addSource(source) { user ->
+                value = user
+                removeSource(source)
+            }
+        }
+    }
+
+    fun observeUser(): LiveData<User> {
+        return authUser
     }
 
     companion object {
