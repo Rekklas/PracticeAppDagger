@@ -2,6 +2,8 @@ package com.rekklesdroid.practiceappdagger.di
 
 import com.rekklesdroid.practiceappdagger.di.auth.AuthModule
 import com.rekklesdroid.practiceappdagger.di.auth.AuthViewModelsModule
+import com.rekklesdroid.practiceappdagger.di.main.MainFragmentBuildersModule
+import com.rekklesdroid.practiceappdagger.di.main.MainViewModelsModule
 import com.rekklesdroid.practiceappdagger.ui.auth.AuthActivity
 import com.rekklesdroid.practiceappdagger.ui.main.MainActivity
 import dagger.Module
@@ -18,6 +20,8 @@ abstract class ActivityBuildersModule {
     ])
     abstract fun contributeAuthActivity(): AuthActivity
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [
+        MainFragmentBuildersModule::class, MainViewModelsModule::class
+    ])
     abstract fun contributeMainActivity(): MainActivity
 }
