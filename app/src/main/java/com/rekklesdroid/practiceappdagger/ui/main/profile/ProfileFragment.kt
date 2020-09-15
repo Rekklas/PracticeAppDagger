@@ -5,10 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rekklesdroid.practiceappdagger.R
+import com.rekklesdroid.practiceappdagger.models.User
+import com.rekklesdroid.practiceappdagger.ui.auth.AuthResource
 import com.rekklesdroid.practiceappdagger.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
+import kotlinx.android.synthetic.main.fragment_profile.*
 import javax.inject.Inject
 
 /**
@@ -34,6 +38,34 @@ class ProfileFragment : DaggerFragment() {
         Log.d(TAG, "onViewCreated: Profile fragment was created")
 
         viewModel = ViewModelProvider(this, providerFactory).get(ProfileViewModel::class.java)
+
+        subscribeObservers()
+    }
+
+    private fun subscribeObservers() {
+        viewModel.getAuthenticatedUser().removeObservers(viewLifecycleOwner)
+        viewModel.getAuthenticatedUser().observe(viewLifecycleOwner, Observer<AuthResource<User>> {
+            when(it) {
+                is AuthResource.Authenticated ->
+                    setUserDetails(it.data)
+                is AuthResource.Error ->
+                    setErrorDetails(it.message)
+            }
+        })
+    }
+
+    private fun setUserDetails(data: User?) {
+        data?.let {
+            email.text = it.email
+            username.text = it.name
+            website.text = it.website
+        }
+    }
+
+    private fun setErrorDetails(message: String?) {
+        email.text = message
+        username.text = getString(R.string.error)
+        website.text = getString(R.string.error)
     }
 
     companion object {
