@@ -2,6 +2,7 @@ package com.rekklesdroid.practiceappdagger.di.main
 
 import androidx.lifecycle.ViewModel
 import com.rekklesdroid.practiceappdagger.di.ViewModelKey
+import com.rekklesdroid.practiceappdagger.ui.main.posts.PostsViewModel
 import com.rekklesdroid.practiceappdagger.ui.main.profile.ProfileViewModel
 import dagger.Binds
 import dagger.Module
@@ -17,4 +18,9 @@ abstract class MainViewModelsModule {
     @IntoMap
     @ViewModelKey(ProfileViewModel::class)
     abstract fun bindProfileViewModel(profileViewModel: ProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PostsViewModel::class)
+    abstract fun bindPostsViewModel(postsViewModel: PostsViewModel): ViewModel
 }
