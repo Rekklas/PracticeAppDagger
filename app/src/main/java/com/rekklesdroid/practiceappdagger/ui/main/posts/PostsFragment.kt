@@ -7,9 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.rekklesdroid.practiceappdagger.R
+import com.rekklesdroid.practiceappdagger.utils.Resource
+import com.rekklesdroid.practiceappdagger.utils.VerticalSpaceItemDecoration
 import com.rekklesdroid.practiceappdagger.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
+import kotlinx.android.synthetic.main.fragment_posts.*
 import javax.inject.Inject
 
 /**
@@ -18,6 +22,9 @@ import javax.inject.Inject
 class PostsFragment: DaggerFragment() {
 
     @Inject lateinit var providerFactory: ViewModelProviderFactory
+    @Inject lateinit var postsRecyclerAdapter: PostsRecyclerAdapter
+    @Inject lateinit var linearLayoutManager: LinearLayoutManager
+    @Inject lateinit var verticalSpaceItemDecoration: VerticalSpaceItemDecoration
 
     private lateinit var viewModel: PostsViewModel
 
@@ -36,13 +43,36 @@ class PostsFragment: DaggerFragment() {
 
         viewModel = ViewModelProvider(this, providerFactory).get(PostsViewModel::class.java)
 
+        initRecyclerView()
         subscribeObservers()
+    }
+
+    private fun initRecyclerView() {
+        recycler_view.apply {
+            layoutManager = linearLayoutManager
+            addItemDecoration(verticalSpaceItemDecoration)
+            adapter = postsRecyclerAdapter
+        }
+
     }
 
     private fun subscribeObservers() {
         viewModel.observePosts().removeObservers(viewLifecycleOwner)
         viewModel.observePosts().observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "subscribeObservers: ${it.data}")
+            when(it) {
+                is Resource.Success -> {
+                    Log.d(TAG, "subscribeObservers: Success")
+                    it.data?.let { list ->
+                        postsRecyclerAdapter.posts = list
+                    }
+                }
+                is Resource.Loading -> {
+                    Log.d(TAG, "subscribeObservers: Loading")
+                }
+                is Resource.Error -> {
+                    Log.e(TAG, "subscribeObservers: Error - ${it.message}")
+                }
+            }
         })
     }
 
