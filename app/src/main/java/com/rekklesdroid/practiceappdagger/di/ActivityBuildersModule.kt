@@ -1,9 +1,11 @@
 package com.rekklesdroid.practiceappdagger.di
 
 import com.rekklesdroid.practiceappdagger.di.auth.AuthModule
+import com.rekklesdroid.practiceappdagger.di.auth.AuthScope
 import com.rekklesdroid.practiceappdagger.di.auth.AuthViewModelsModule
 import com.rekklesdroid.practiceappdagger.di.main.MainFragmentBuildersModule
 import com.rekklesdroid.practiceappdagger.di.main.MainModule
+import com.rekklesdroid.practiceappdagger.di.main.MainScope
 import com.rekklesdroid.practiceappdagger.di.main.MainViewModelsModule
 import com.rekklesdroid.practiceappdagger.ui.auth.AuthActivity
 import com.rekklesdroid.practiceappdagger.ui.main.MainActivity
@@ -16,11 +18,13 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class ActivityBuildersModule {
 
+    @AuthScope
     @ContributesAndroidInjector(modules = [
         AuthViewModelsModule::class, AuthModule::class
     ])
     abstract fun contributeAuthActivity(): AuthActivity
 
+    @MainScope
     @ContributesAndroidInjector(modules = [
         MainFragmentBuildersModule::class, MainViewModelsModule::class, MainModule::class
     ])
